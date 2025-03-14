@@ -72,8 +72,8 @@ const TasksList = () => {
     <>
       <DndProvider backend={HTML5Backend}>
         <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
-          <div className="max-w-7xl mx-auto mb-6">
-            <div className="flex justify-between items-center">
+          <div className="max-w-7xl mx-auto mb-6 px-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
               {/* Search Bar */}
               <div className="relative w-full sm:w-[300px]">
                 <input
@@ -85,44 +85,52 @@ const TasksList = () => {
                 />
               </div>
 
-              <div className="flex space-x-4 mt-4 ml-auto items-end">
+              {/* Filters & Date Pickers */}
+              <div className="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-4 sm:space-y-0 w-full sm:w-auto">
                 <CustomDropdown
                   buttonText="Filter Tasks"
                   options={["To Do", "In Progress", "Done"]}
                   selectedOption={selectedStatuses}
                   onChange={handleStatusChange}
+                  className="w-full sm:w-auto"
                 />
-                <div>
-                  <DatePicker
-                    selected={startDate ? new Date(startDate) : null}
-                    onChange={(date) => setStartDate(format(date, "yyyy/MM/dd"))}
-                    className="p-3 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-blue-500"
-                    placeholderText="Select start date"
-                    dateFormat="yyyy/MM/dd"
-                    customInput={
-                      <CustomDateInput
-                        onChange={(e) => setStartDate(e.target.value)}
-                        value={startDate}
-                        onClear={() => setStartDate("")} // Clears the date when the cross is clicked
-                      />
-                    }
-                  />
-                </div>
-                <div>
-                  <DatePicker
-                    selected={endDate ? new Date(endDate) : null}
-                    onChange={(date) => setEndDate(format(date, "yyyy/MM/dd"))} // Fix: Use setEndDate instead of setStartDate
-                    className="p-3 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-blue-500"
-                    placeholderText="Select end date"
-                    dateFormat="yyyy/MM/dd"
-                    customInput={
-                      <CustomDateInput
-                        onChange={(e) => setEndDate(e.target.value)}
-                        value={endDate}
-                        onClear={() => setEndDate("")} // Clears the date when the cross is clicked
-                      />
-                    }
-                  />
+
+                <div className="flex flex-row items-center">
+                  {/* Start Date Picker */}
+                  <div className="w-full sm:w-auto">
+                    <DatePicker
+                      selected={startDate ? new Date(startDate) : null}
+                      onChange={(date) => setStartDate(format(date, "yyyy/MM/dd"))}
+                      className="p-3 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+                      placeholderText="Select start date"
+                      dateFormat="yyyy/MM/dd"
+                      customInput={
+                        <CustomDateInput
+                          onChange={(e) => setStartDate(e.target.value)}
+                          value={startDate}
+                          onClear={() => setStartDate("")}
+                        />
+                      }
+                    />
+                  </div>
+                  <span className="mx-2">-</span>
+                  {/* End Date Picker */}
+                  <div className="w-full sm:w-auto">
+                    <DatePicker
+                      selected={endDate ? new Date(endDate) : null}
+                      onChange={(date) => setEndDate(format(date, "yyyy/MM/dd"))}
+                      className="p-3 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+                      placeholderText="Select end date"
+                      dateFormat="yyyy/MM/dd"
+                      customInput={
+                        <CustomDateInput
+                          onChange={(e) => setEndDate(e.target.value)}
+                          value={endDate}
+                          onClear={() => setEndDate("")}
+                        />
+                      }
+                    />
+                  </div>
                 </div>
               </div>
             </div>
