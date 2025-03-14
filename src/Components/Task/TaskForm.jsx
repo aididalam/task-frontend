@@ -1,28 +1,31 @@
 import { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import useTaskStore from "../../store/useTaskStore";
 
 const TaskForm = ({ closeModal }) => {
-  const [taskData, setTaskData] = useState({
+  const { addTask } = useTaskStore();
+
+  const initialValues = {
     name: "",
     description: "",
     status: "To Do",
     due_date: ""
-  });
+  };
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Task name is required"),
     due_date: Yup.date().required("Due date is required")
   });
 
-  const handleSubmit = (values) => {
-    // Handle the task addition logic here (e.g., API call or state update)
-    console.log("Task added:", values);
-    closeModal(); // Close the modal after submission
+  const handleSubmit = async (values, { resetForm }) => {
+    await addTask(values); // Add task to Zustand store
+    resetForm(); // Reset form fields after submission
+    closeModal(); // Close the modal
   };
 
   return (
-    <Formik initialValues={taskData} validationSchema={validationSchema} onSubmit={handleSubmit}>
+    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
       <Form>
         <div className="space-y-4">
           <div>
