@@ -8,16 +8,17 @@ const useTaskStore = create(
       tasks: [],
       setTasks: (tasks) => set({ tasks }),
 
-      moveTask: async (taskId, newStatus) => {
-        const tasks = get().tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
+      updateTask: async (taskId, updatedFields) => {
+        console.log(updatedFields);
+        const tasks = get().tasks.map((task) => (task.id === taskId ? { ...task, ...updatedFields } : task));
         set({ tasks });
 
-        // API call to update task status
+        // API call to update task status, name, description, and due_date
         try {
-          await axios.put(`http://localhost:5001/tasks/${taskId}`, { status: newStatus });
+          await axios.put(`http://localhost:5001/tasks/${taskId}`, updatedFields);
         } catch (error) {
           console.error("Failed to update task:", error);
-          // Optionally handle error by reverting the status if needed
+          // Optionally handle error by reverting the changes if needed
         }
       }
     }),

@@ -1,10 +1,10 @@
 import { useDrop } from "react-dnd";
 import TaskCard from "./TaskCard";
 
-const TaskColumn = ({ status, tasks, moveTask, columnStyle }) => {
+const TaskColumn = ({ status, tasks, updateTask, columnStyle }) => {
   const [, drop] = useDrop({
     accept: "TASK",
-    drop: (item) => moveTask(item.id, status),
+    drop: (item) => updateTask(item.id, { status }),
     collect: (monitor) => ({
       isOver: monitor.isOver()
     })

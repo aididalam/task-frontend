@@ -9,14 +9,17 @@ import "react-datepicker/dist/react-datepicker.css"; // Importing styles
 import useTasksLoader from "../hooks/useTasksLoader";
 import { format } from "date-fns";
 import CustomDateInput from "../Components/Universal/CustomDateInput";
+import Modal from "../Components/Universal/Modal";
+import TaskForm from "../Components/Task/TaskForm";
 
 const TasksList = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
   const { data, isLoading, isError } = useTasksLoader(search, startDate, endDate); // Pass dates here
-  const { setTasks, tasks, moveTask } = useTaskStore();
+  const { setTasks, tasks, updateTask } = useTaskStore();
   const [selectedStatuses, setSelectedStatuses] = useState({
     "To Do": true,
     "In Progress": true,
@@ -68,20 +71,35 @@ const TasksList = () => {
     return "sm:w-full";
   };
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <DndProvider backend={HTML5Backend}>
         <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
           <div className="max-w-7xl mx-auto mb-6 px-4">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+              <button
+                onClick={openModal}
+                className="w-full sm:w-auto py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 mb-4 sm:mb-0"
+              >
+                Add Task
+              </button>
+
               {/* Search Bar */}
-              <div className="relative w-full sm:w-[300px]">
+              <div className="relative w-full sm:w-[400px]">
                 <input
                   type="text"
                   placeholder="Search tasks..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full p-3 pl-10 pr-4 rounded-full border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 pl-10 pr-4 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
@@ -144,7 +162,7 @@ const TasksList = () => {
                   <TaskColumn
                     status={column.status}
                     tasks={column.tasks}
-                    moveTask={moveTask}
+                    updateTask={updateTask}
                     columnStyle={column.style}
                   />
                 </div>
@@ -153,6 +171,10 @@ const TasksList = () => {
           </div>
         </div>
       </DndProvider>
+
+      <Modal isOpen={isModalOpen} closeModal={closeModal}>
+        <TaskForm closeModal={closeModal} />
+      </Modal>
     </>
   );
 };
