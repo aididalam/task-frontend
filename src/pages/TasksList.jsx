@@ -2,13 +2,20 @@ import React, { useState, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import TaskColumn from "../Components/Task/TaskColumn";
-import useTasksLoader from "../hooks/useTasksLoader";
 import useTaskStore from "../store/useTaskStore";
 import CustomDropdown from "../Components/Task/CustomDropdown";
+import DatePicker from "react-datepicker"; // Importing react-datepicker
+import "react-datepicker/dist/react-datepicker.css"; // Importing styles
+import useTasksLoader from "../hooks/useTasksLoader";
+import { format } from "date-fns";
+import CustomDateInput from "../Components/Task/CustomDateInput";
 
 const TasksList = () => {
   const [search, setSearch] = useState("");
-  const { data, isLoading, isError } = useTasksLoader(search);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const { data, isLoading, isError } = useTasksLoader(search, startDate, endDate); // Pass dates here
   const { setTasks, tasks, moveTask } = useTaskStore();
   const [selectedStatuses, setSelectedStatuses] = useState({
     "To Do": true,
@@ -78,12 +85,46 @@ const TasksList = () => {
                 />
               </div>
 
-              <CustomDropdown
-                buttonText="Filter Tasks"
-                options={["To Do", "In Progress", "Done"]}
-                selectedOption={selectedStatuses}
-                onChange={handleStatusChange}
-              />
+              <div className="flex space-x-4 mt-4 ml-auto items-end">
+                <CustomDropdown
+                  buttonText="Filter Tasks"
+                  options={["To Do", "In Progress", "Done"]}
+                  selectedOption={selectedStatuses}
+                  onChange={handleStatusChange}
+                />
+                <div>
+                  <DatePicker
+                    selected={startDate ? new Date(startDate) : null}
+                    onChange={(date) => setStartDate(format(date, "yyyy/MM/dd"))}
+                    className="p-3 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-blue-500"
+                    placeholderText="Select start date"
+                    dateFormat="yyyy/MM/dd"
+                    customInput={
+                      <CustomDateInput
+                        onChange={(e) => setStartDate(e.target.value)}
+                        value={startDate}
+                        onClear={() => setStartDate("")} // Clears the date when the cross is clicked
+                      />
+                    }
+                  />
+                </div>
+                <div>
+                  <DatePicker
+                    selected={endDate ? new Date(endDate) : null}
+                    onChange={(date) => setEndDate(format(date, "yyyy/MM/dd"))} // Fix: Use setEndDate instead of setStartDate
+                    className="p-3 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-blue-500"
+                    placeholderText="Select end date"
+                    dateFormat="yyyy/MM/dd"
+                    customInput={
+                      <CustomDateInput
+                        onChange={(e) => setEndDate(e.target.value)}
+                        value={endDate}
+                        onClear={() => setEndDate("")} // Clears the date when the cross is clicked
+                      />
+                    }
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
