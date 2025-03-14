@@ -3,12 +3,12 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import TaskColumn from "../Components/Task/TaskColumn";
 import useTaskStore from "../store/useTaskStore";
-import CustomDropdown from "../Components/Task/CustomDropdown";
+import CustomDropdown from "../Components/Universal/CustomDropdown";
 import DatePicker from "react-datepicker"; // Importing react-datepicker
 import "react-datepicker/dist/react-datepicker.css"; // Importing styles
 import useTasksLoader from "../hooks/useTasksLoader";
 import { format } from "date-fns";
-import CustomDateInput from "../Components/Task/CustomDateInput";
+import CustomDateInput from "../Components/Universal/CustomDateInput";
 
 const TasksList = () => {
   const [search, setSearch] = useState("");
