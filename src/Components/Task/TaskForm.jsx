@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import useTaskStore from "../../store/useTaskStore";
+import { useAuth } from "../../context/AuthContext";
 
 const TaskForm = ({ closeModal }) => {
   const { addTask } = useTaskStore();
+  const { authState } = useAuth();
 
   const initialValues = {
     name: "",
@@ -15,11 +17,13 @@ const TaskForm = ({ closeModal }) => {
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Task name is required"),
+    description: Yup.string().required("Task description is required"),
+    status: Yup.string().required("Task status is required"),
     due_date: Yup.date().required("Due date is required")
   });
 
   const handleSubmit = async (values, { resetForm }) => {
-    await addTask(values); // Add task to Zustand store
+    await addTask(values, authState.access_token); // Add task to Zustand store
     resetForm(); // Reset form fields after submission
     closeModal(); // Close the modal
   };

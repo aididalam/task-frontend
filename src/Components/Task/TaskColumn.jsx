@@ -1,10 +1,13 @@
 import { useDrop } from "react-dnd";
 import TaskCard from "./TaskCard";
+import { useAuth } from "../../context/AuthContext";
 
 const TaskColumn = ({ status, tasks, updateTask, columnStyle }) => {
+  const { authState } = useAuth();
+
   const [, drop] = useDrop({
     accept: "TASK",
-    drop: (item) => updateTask(item.id, { status }),
+    drop: (item) => updateTask(item.id, { status }, authState.access_token),
     collect: (monitor) => ({
       isOver: monitor.isOver()
     })

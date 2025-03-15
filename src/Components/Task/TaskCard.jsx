@@ -4,6 +4,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import useTaskStore from "../../store/useTaskStore";
+import { useAuth } from "../../context/AuthContext";
 
 // Validation schema with Yup
 const validationSchema = Yup.object({
@@ -15,6 +16,7 @@ const validationSchema = Yup.object({
 const TaskCard = ({ task }) => {
   const { deleteTask, updateTask } = useTaskStore();
   const [isEditing, setIsEditing] = useState(false);
+  const { authState } = useAuth();
 
   const [{ isDragging }, drag] = useDrag({
     type: "TASK",
@@ -24,7 +26,7 @@ const TaskCard = ({ task }) => {
     })
   });
 
-  const handleDelete = () => deleteTask(task.id);
+  const handleDelete = () => deleteTask(task.id, authState.access_token);
 
   return (
     <div
@@ -42,7 +44,7 @@ const TaskCard = ({ task }) => {
           }}
           validationSchema={validationSchema}
           onSubmit={(values) => {
-            updateTask(task.id, values); // Update task with new values
+            updateTask(task.id, values, authState.access_token); // Update task with new values
             setIsEditing(false); // Exit editing mode
           }}
         >
