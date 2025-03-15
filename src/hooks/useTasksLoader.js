@@ -3,10 +3,14 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 // import useAuthStore from "../store/useAuthStore";
 
-const useTasksLoader = (search = "", startDate = "", endDate = "") => {
+const useTasksLoader = (search = "", startDate = "", endDate = "", selectedStatuses = []) => {
   const { authState } = useAuth();
+  const filteredStatuses = Object.entries(selectedStatuses)
+    .filter(([status, isSelected]) => isSelected)
+    .map(([status]) => status);
+
   return useQuery({
-    queryKey: ["tasks", search, startDate, endDate], // Add startDate and endDate to the queryKey to invalidate the query when these change
+    queryKey: ["tasks", search, startDate, endDate, ...filteredStatuses], // Add startDate and endDate to the queryKey to invalidate the query when these change
     queryFn: async () => {
       // Construct query params
       let queryParams = "";
@@ -16,6 +20,10 @@ const useTasksLoader = (search = "", startDate = "", endDate = "") => {
       }
       if (endDate) {
         queryParams += `${queryParams ? "&" : ""}endDate=${endDate}`;
+      }
+
+      if (filteredStatuses.length > 0) {
+        queryParams += `${queryParams ? "&" : ""}statuses=${filteredStatuses.join(",")}`;
       }
 
       const response = await axios.get(

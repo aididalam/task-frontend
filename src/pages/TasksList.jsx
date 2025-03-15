@@ -15,16 +15,24 @@ import TaskForm from "../Components/Task/TaskForm";
 const TasksList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-
-  const { data, isLoading, isError } = useTasksLoader(search, startDate, endDate); // Pass dates here
-  const { setTasks, tasks, updateTask } = useTaskStore();
   const [selectedStatuses, setSelectedStatuses] = useState({
     "To Do": true,
     "In Progress": true,
     Done: true
   });
+
+  // Fetch tasks data, now including selectedStatuses in the hook
+  const { data, isLoading, isError } = useTasksLoader(
+    debouncedSearch,
+    startDate,
+    endDate,
+    selectedStatuses // Pass selectedStatuses here
+  );
+
+  const { setTasks, tasks, updateTask } = useTaskStore();
 
   const handleStatusChange = (status) => {
     setSelectedStatuses((prevStatuses) => ({
@@ -33,27 +41,14 @@ const TasksList = () => {
     }));
   };
 
-  // Filtered columns based on selected checkboxes
-  const columnsArray = [
-    {
-      status: "To Do",
-      tasks: tasks?.filter((task) => task.status === "To Do") || [],
-      style: "bg-blue-50 border-blue-500 shadow-lg"
-    },
-    {
-      status: "In Progress",
-      tasks: tasks?.filter((task) => task.status === "In Progress") || [],
-      style: "bg-yellow-50 border-yellow-500 shadow-lg"
-    },
-    {
-      status: "Done",
-      tasks: tasks?.filter((task) => task.status === "Done") || [],
-      style: "bg-green-50 border-green-500 shadow-lg"
-    }
-  ];
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500); // 500ms debounce delay
 
-  // Apply the selected filters
-  const filteredColumns = columnsArray.filter((column) => selectedStatuses[column.status]);
+    // Cleanup the timeout on search change
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
     if (data) {
@@ -61,15 +56,7 @@ const TasksList = () => {
     }
   }, [data]);
 
-  if (isLoading) return <div className="text-center py-10">Loading...</div>;
   if (isError) return <div className="text-center py-10 text-red-600">Error fetching tasks</div>;
-
-  // Conditionally set width classes based on the number of columns
-  const getColumnWidth = (numColumns) => {
-    if (numColumns === 3) return "sm:w-[31%]";
-    if (numColumns === 2) return "sm:w-[48%]";
-    return "sm:w-full";
-  };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -157,13 +144,20 @@ const TasksList = () => {
           {/* Task Columns */}
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-wrap justify-start sm:justify-between pb-4 w-full">
-              {filteredColumns.map((column, i) => (
-                <div key={i} className={`w-full mb-4 sm:mb-0 ${getColumnWidth(filteredColumns.length)}`}>
+              {["To Do", "In Progress", "Done"].map((status, i) => (
+                <div
+                  key={i}
+                  className="w-full sm:w-[31%] mb-4 sm:mb-0" // Fixed width for all columns
+                >
                   <TaskColumn
-                    status={column.status}
-                    tasks={column.tasks}
+                    status={status}
+                    tasks={tasks.filter((task) => task.status === status)} // Use filtered data here
                     updateTask={updateTask}
-                    columnStyle={column.style}
+                    columnStyle={`bg-${
+                      status === "To Do" ? "blue" : status === "In Progress" ? "yellow" : "green"
+                    }-50 border-${
+                      status === "To Do" ? "blue" : status === "In Progress" ? "yellow" : "green"
+                    }-500 shadow-lg`}
                   />
                 </div>
               ))}
