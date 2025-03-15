@@ -37,17 +37,17 @@ const TasksList = () => {
   const columnsArray = [
     {
       status: "To Do",
-      tasks: tasks.filter((task) => task.status === "To Do"),
+      tasks: tasks?.filter((task) => task.status === "To Do") || [],
       style: "bg-blue-50 border-blue-500 shadow-lg"
     },
     {
       status: "In Progress",
-      tasks: tasks.filter((task) => task.status === "In Progress"),
+      tasks: tasks?.filter((task) => task.status === "In Progress") || [],
       style: "bg-yellow-50 border-yellow-500 shadow-lg"
     },
     {
       status: "Done",
-      tasks: tasks.filter((task) => task.status === "Done"),
+      tasks: tasks?.filter((task) => task.status === "Done") || [],
       style: "bg-green-50 border-green-500 shadow-lg"
     }
   ];

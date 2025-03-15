@@ -2,6 +2,9 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
 
+// Declare the API URL constant
+const API_URL = import.meta.env.VITE_API_URL;
+
 const useTaskStore = create(
   persist(
     (set, get) => ({
@@ -20,7 +23,7 @@ const useTaskStore = create(
         }));
 
         try {
-          const response = await axios.post("http://localhost:5001/tasks", taskWithId);
+          const response = await axios.post(`${API_URL}/tasks`, taskWithId);
           const savedTask = response.data;
 
           // Replace temporary ID with actual ID from the backend if necessary
@@ -45,7 +48,7 @@ const useTaskStore = create(
 
         // API call to update task status, name, description, and due_date
         try {
-          await axios.put(`http://localhost:5001/tasks/${taskId}`, updatedFields);
+          await axios.put(`${API_URL}/tasks/${taskId}`, updatedFields);
         } catch (error) {
           console.error("Failed to update task:", error);
           // Optionally handle error by reverting the changes if needed
@@ -59,7 +62,7 @@ const useTaskStore = create(
         }));
 
         try {
-          await axios.delete(`http://localhost:5001/tasks/${taskId}`);
+          await axios.delete(`${API_URL}/tasks/${taskId}`);
         } catch (error) {
           console.error("Failed to delete task:", error);
           // Optionally restore the deleted task if the API request fails

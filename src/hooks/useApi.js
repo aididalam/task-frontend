@@ -33,6 +33,7 @@ const useApi = () => {
       } else {
         setData(responseData);
       }
+      return responseData;
     } catch (err) {
       setError({ message: err.message || "Network error" }); // Set error message on failure
     } finally {

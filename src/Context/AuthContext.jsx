@@ -1,79 +1,79 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import useApi from "../hooks/useApi";
 
 // Create the AuthContext
 const AuthContext = createContext();
 
-// Helper functions for JWT token handling
+// Helper function to get auth state from localStorage
 const getAuthState = () => {
   const authState = localStorage.getItem("authState");
   return authState ? JSON.parse(authState) : null;
 };
 
-const refreshToken = async () => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/refresh`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({})
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-    // Save the new token and expiration time
-    const authState = {
-      access_token: data.access_token,
-      expires_in: data.expires_in,
-      user: null // User data is not refreshed on token refresh
-    };
-    localStorage.setItem("authState", JSON.stringify(authState));
-    return data.access_token;
-  } else {
-    // If refresh fails, clear storage and return null
-    localStorage.removeItem("authState");
-    return null;
-  }
-};
-
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState(getAuthState());
+  const { fetchApi } = useApi();
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [intervalTime, setIntervalTime] = useState(1); // Start with 1s interval
 
   useEffect(() => {
-    const checkAndRefreshToken = () => {
-      if (!authState || !authState.expires_in) return;
-
-      const expirationDate = new Date(authState.expires_in);
-      const timeLeft = expirationDate - new Date();
-
-      // Refresh the token 5 minutes before it expires
-      if (timeLeft < 5 * 60 * 1000 && authState.access_token) {
-        refreshToken().then((newToken) => {
-          if (newToken) {
-            setAuthState((prevState) => ({
-              ...prevState,
-              access_token: newToken
-            }));
-          }
-        });
+    const checkAndRefreshToken = async () => {
+      if (!authState || !authState.expires_in) {
+        setIsAuthReady(true);
+        return;
       }
+
+      const expirationTime = authState.expires_in; // Stored as timestamp
+      const timeLeft = expirationTime - Date.now();
+
+      // Refresh the token 5 minutes before expiry
+      if (timeLeft < 5 * 60 * 1000 && authState.access_token) {
+        const response = await fetchApi("/refresh", "POST", {
+          headers: { Authorization: `Bearer ${authState.access_token}` },
+          body: {}
+        });
+
+        if (response?.access_token) {
+          const newExpirationTime = Date.now() + response.expires_in * 1000; // Convert to timestamp
+
+          const newAuthState = {
+            access_token: response.access_token,
+            expires_in: newExpirationTime,
+            user: authState.user // Keep user data unchanged
+          };
+
+          localStorage.setItem("authState", JSON.stringify(newAuthState));
+          setAuthState(newAuthState);
+        } else {
+          localStorage.removeItem("authState");
+          setAuthState(null);
+        }
+      }
+
+      setIsAuthReady(true);
     };
 
-    const interval = setInterval(checkAndRefreshToken, 60 * 1000); // check every minute
+    const interval = setInterval(checkAndRefreshToken, intervalTime * 1000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [authState]);
+    return () => clearInterval(interval);
+  }, [authState, fetchApi, intervalTime]);
+
+  useEffect(() => {
+    if (isAuthReady) {
+      setIntervalTime(60); // Set interval to 60 seconds after initial check
+    }
+  }, [isAuthReady]);
 
   const login = (data) => {
     const { access_token, expires_in, user } = data;
-    const expirationDate = new Date();
-    expirationDate.setSeconds(expirationDate.getSeconds() + expires_in);
+    const expirationTime = Date.now() + expires_in * 1000; // Convert to timestamp
 
-    // Update the authState object and save it to localStorage
     const updatedAuthState = {
       access_token,
-      expires_in: expirationDate,
+      expires_in: expirationTime,
       user
     };
+
     localStorage.setItem("authState", JSON.stringify(updatedAuthState));
     setAuthState(updatedAuthState);
   };
@@ -83,7 +83,9 @@ export const AuthProvider = ({ children }) => {
     setAuthState(null);
   };
 
-  return <AuthContext.Provider value={{ authState, login, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ authState, login, logout, isAuthReady }}>{children}</AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);

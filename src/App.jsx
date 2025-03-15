@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import { Navigate } from "react-router-dom";
 import TasksList from "./pages/TasksList";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import Navbar from "./Components/Universal/Navbar";
 
 // Import the AuthProvider
 
@@ -25,22 +26,41 @@ const App = () => {
 };
 
 const AppRoutes = () => {
-  const { authState } = useAuth();
-
+  const { authState, isAuthReady } = useAuth();
   return (
-    <Routes>
-      {/* Login Route */}
-      <Route path="/login" element={authState ? <Navigate to="/tasks" /> : <Login />} />
+    <>
+      {!isAuthReady ? (
+        <div className="flex justify-center items-center h-screen bg-white">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-75"></div>
+        </div>
+      ) : (
+        <Routes>
+          {/* Login Route */}
+          <Route path="/login" element={authState ? <Navigate to="/tasks" /> : <Login />} />
 
-      {/* Register Route */}
-      <Route path="/register" element={authState ? <Navigate to="/tasks" /> : <Register />} />
+          {/* Register Route */}
+          <Route path="/register" element={authState ? <Navigate to="/tasks" /> : <Register />} />
 
-      {/* Protected Route for Tasks List */}
-      <Route path="/tasks" element={authState ? <TasksList /> : <Navigate to="/login" />} />
+          {/* Protected Route for Tasks List */}
+          <Route
+            path="/tasks"
+            element={
+              authState ? (
+                <>
+                  <Navbar />
+                  <TasksList />
+                </>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
 
-      {/* Default Route (redirect to /login if no route is matched) */}
-      <Route path="*" element={authState ? <Navigate to="/tasks" /> : <Navigate to="/login" />} />
-    </Routes>
+          {/* Default Route (redirect to /login if no route is matched) */}
+          <Route path="*" element={authState ? <Navigate to="/tasks" /> : <Navigate to="/login" />} />
+        </Routes>
+      )}
+    </>
   );
 };
 
