@@ -13,7 +13,7 @@ const useTasksLoader = (search = "", startDate = "", endDate = "", selectedStatu
   useEffect(() => {
     // Only create WebSocket connection if it doesn't exist
     if (!wsRef.current) {
-      const wsUrl = `ws://localhost:8080`; // Change this to your WebSocket URL
+      const wsUrl = `${import.meta.env.VITE_WEB_SOCKET_URL}`; // Change this to your WebSocket URL
 
       // WebSocket options
       const wsOptions = {
