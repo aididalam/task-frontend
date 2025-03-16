@@ -31,3 +31,14 @@ body {
     background: transparent;
     /* Optional: you can adjust the thumb to make it invisible */
 }
+
+@media (max-width: 768px) {
+    body {
+        max-height: unset;
+        overflow-y: scroll;
+    }
+
+    .column {
+        height: 490px;
+    }
+}
