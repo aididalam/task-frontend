@@ -28,13 +28,9 @@ const useTaskStore = create(
               Authorization: `Bearer ${access_token}` // Add the bearer token to the request
             }
           });
-          const savedTask = response.data;
-
-          // Replace temporary ID with actual ID from the backend if necessary
+          const taskList = response.data;
           set((state) => ({
-            tasks: state.tasks.map((task) =>
-              task.id === taskWithId.id ? { ...task, id: savedTask.id } : task
-            )
+            tasks: taskList
           }));
         } catch (error) {
           console.error("Failed to add task:", error);
@@ -46,7 +42,6 @@ const useTaskStore = create(
       },
 
       updateTask: async (taskId, updatedFields, access_token) => {
-        console.log(updatedFields);
         const tasks = get().tasks.map((task) => (task.id === taskId ? { ...task, ...updatedFields } : task));
         set({ tasks });
 

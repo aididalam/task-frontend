@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    max-height: 100vh !important;
+    overflow-y: hidden;
+}
+
+.column {
+    height: calc(100vh - 200px);
+}
+
+.tasklist {
+    height: calc(100% - 40px);
+    margin-top: 10px;
+    overflow-y: scroll;
+    /* Hide scrollbar for all browsers */
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: transparent transparent;
+    /* Firefox */
+}
+
+.tasklist::-webkit-scrollbar {
+    width: 0px;
+    /* Hides the scrollbar in Webkit-based browsers (Chrome, Safari, etc.) */
+}
+
+.tasklist::-webkit-scrollbar-thumb {
+    background: transparent;
+    /* Optional: you can adjust the thumb to make it invisible */
+}

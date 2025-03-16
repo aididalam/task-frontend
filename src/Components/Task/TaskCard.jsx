@@ -25,7 +25,11 @@ const TaskCard = ({ task }) => {
     <div
       ref={drag}
       className={`bg-white p-4 pb-1 rounded-lg shadow-lg transition border-l-4 flex flex-col relative ${
-        task.status === "Done" ? "border-green-500" : "border-gray-300"
+        task.status === "Done"
+          ? "border-green-500"
+          : task.status === "To Do"
+          ? "border-red-500"
+          : "border-blue-500"
       } ${isDragging ? "opacity-50" : ""}`}
       style={{ cursor: "grab" }} // Set the cursor to grab
     >

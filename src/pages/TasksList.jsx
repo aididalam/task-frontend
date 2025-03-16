@@ -70,7 +70,7 @@ const TasksList = () => {
     <>
       <DndProvider backend={HTML5Backend}>
         <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
-          <div className="max-w-7xl mx-auto mb-6 px-4">
+          <div className="mx-auto mb-6 px-4">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
               <button
                 onClick={openModal}
@@ -142,21 +142,21 @@ const TasksList = () => {
           </div>
 
           {/* Task Columns */}
-          <div className="max-w-7xl mx-auto">
+          <div className=" mx-auto">
             <div className="flex flex-wrap justify-start sm:justify-between pb-4 w-full">
               {["To Do", "In Progress", "Done"].map((status, i) => (
                 <div
                   key={i}
-                  className="w-full sm:w-[31%] mb-4 sm:mb-0" // Fixed width for all columns
+                  className="w-full sm:w-[32%] mb-4 sm:mb-0" // Fixed width for all columns
                 >
                   <TaskColumn
                     status={status}
-                    tasks={tasks.filter((task) => task.status === status)} // Use filtered data here
+                    tasks={Array.isArray(tasks) ? tasks.filter((task) => task.status === status) : []} // Ensure tasks is an array
                     updateTask={updateTask}
                     columnStyle={`bg-${
-                      status === "To Do" ? "blue" : status === "In Progress" ? "yellow" : "green"
+                      status === "To Do" ? "red" : status === "In Progress" ? "blue" : "green"
                     }-50 border-${
-                      status === "To Do" ? "blue" : status === "In Progress" ? "yellow" : "green"
+                      status === "To Do" ? "red" : status === "In Progress" ? "blue" : "green"
                     }-500 shadow-lg`}
                   />
                 </div>
