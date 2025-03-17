@@ -7,6 +7,8 @@ import { Navigate } from "react-router-dom";
 import TasksList from "./pages/TasksList";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./Components/Universal/Navbar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Import the AuthProvider
 
@@ -29,6 +31,7 @@ const AppRoutes = () => {
   const { authState, isAuthReady } = useAuth();
   return (
     <>
+      <ToastContainer />
       {!isAuthReady ? (
         <div className="flex justify-center items-center h-screen bg-white">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-75"></div>

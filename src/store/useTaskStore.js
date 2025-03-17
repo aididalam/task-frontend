@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import { getPendingActions, removeSyncedActions, saveTaskAction } from "./dexieStore";
+import { toast } from "react-toastify";
 
 // Declare the API URL constant
 const API_URL = import.meta.env.VITE_API_URL;
@@ -33,11 +36,13 @@ const useTaskStore = create(
             tasks: taskList
           }));
         } catch (error) {
-          console.error("Failed to add task:", error);
-          // Optionally remove the optimistically added task if the API request fails
-          set((state) => ({
-            tasks: state.tasks.filter((task) => task.id !== taskWithId.id)
-          }));
+          if (!navigator.onLine) {
+            await saveTaskAction("add", taskWithId);
+          } else {
+            set((state) => ({
+              tasks: state.tasks.filter((task) => task.id !== taskWithId.id)
+            }));
+          }
         }
       },
 
@@ -53,8 +58,9 @@ const useTaskStore = create(
             }
           });
         } catch (error) {
-          console.error("Failed to update task:", error);
-          // Optionally handle error by reverting the changes if needed
+          if (!navigator.onLine) {
+            await saveTaskAction("update", { id: taskId, ...updatedFields });
+          }
         }
       },
 
@@ -71,16 +77,54 @@ const useTaskStore = create(
             }
           });
         } catch (error) {
-          console.error("Failed to delete task:", error);
-          // Optionally restore the deleted task if the API request fails
-          set((state) => ({
-            tasks: [...state.tasks, get().tasks.find((task) => task.id === taskId)]
-          }));
+          if (!navigator.onLine) {
+            await saveTaskAction("delete", { id: taskId });
+          } else {
+            set((state) => ({
+              tasks: [...state.tasks, get().tasks.find((task) => task.id === taskId)]
+            }));
+          }
         }
       }
     }),
     { name: "tasks" } // Persist tasks in local storage
   )
 );
+
+export const syncOfflineTasks = async (access_token) => {
+  const pendingActions = await getPendingActions();
+
+  for (const action of pendingActions) {
+    try {
+      if (action.type === "add") {
+        await axios.post(`${API_URL}/tasks`, action.taskData, {
+          headers: { Authorization: `Bearer ${access_token}` }
+        });
+      } else if (action.type === "update") {
+        await axios.put(`${API_URL}/tasks/${action.taskId}`, action.taskData, {
+          headers: { Authorization: `Bearer ${access_token}` }
+        });
+      } else if (action.type === "delete") {
+        await axios.delete(`${API_URL}/tasks/${action.taskId}`, {
+          headers: { Authorization: `Bearer ${access_token}` }
+        });
+      }
+    } catch (error) {
+      console.error(`Failed to sync ${action.type} for task ${action.taskId}`);
+    }
+  }
+
+  // Remove successfully synced actions
+  await removeSyncedActions(pendingActions.map((action) => action.id));
+  toast.success("✅ Offline tasks synced!");
+};
+
+// Detect when online and sync tasks
+window.addEventListener("online", async () => {
+  const authState = JSON.parse(localStorage.getItem("authState"));
+  if (authState?.access_token) {
+    await syncOfflineTasks(authState.access_token);
+  }
+});
 
 export default useTaskStore;

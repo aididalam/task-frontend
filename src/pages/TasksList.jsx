@@ -61,8 +61,6 @@ const TasksList = () => {
     }
   }, [data]);
 
-  if (isError) return <div className="text-center py-10 text-red-600">Error fetching tasks</div>;
-
   const openModal = () => {
     setIsModalOpen(true);
   };

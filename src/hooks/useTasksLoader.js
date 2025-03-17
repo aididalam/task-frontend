@@ -17,7 +17,7 @@ const useTasksLoader = (search = "", startDate = "", endDate = "", selectedStatu
 
       // WebSocket options
       const wsOptions = {
-        maxRetries: 10, // max retries before giving up
+        maxRetries: 3, // max retries before giving up
         reconnectInterval: 2000 // 2 seconds between attempts
       };
 
