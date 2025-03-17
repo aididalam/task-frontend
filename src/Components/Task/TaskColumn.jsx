@@ -1,6 +1,6 @@
 import { useDrop } from "react-dnd";
 import TaskCard from "./TaskCard";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../dcontext/AuthContext";
 
 const TaskColumn = ({ status, tasks, updateTask, columnStyle }) => {
   const { authState } = useAuth();

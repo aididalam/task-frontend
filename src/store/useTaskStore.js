@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../dcontext/AuthContext";
 import { getPendingActions, removeSyncedActions, saveTaskAction } from "./dexieStore";
 import { toast } from "react-toastify";
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaTrash } from "react-icons/fa";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../dcontext/AuthContext";
 import useTaskStore from "../../store/useTaskStore";
 import TaskDueDateField from "./TaskDueDateField";
 import TaskDescriptionField from "./TaskDescriptionField";

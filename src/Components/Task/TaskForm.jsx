@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import useTaskStore from "../../store/useTaskStore";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../dcontext/AuthContext";
 
 const TaskForm = ({ closeModal }) => {
   const { addTask } = useTaskStore();
