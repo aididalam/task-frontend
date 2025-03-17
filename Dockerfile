@@ -8,7 +8,7 @@ COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
 # Copy the source code and build the app
-COPY . .
+COPY ./ ./
 
 
 ENV VITE_API_URL=http://127.0.0.1:8330  
