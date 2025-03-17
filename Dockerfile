@@ -11,8 +11,13 @@ RUN npm install --legacy-peer-deps
 COPY ./ ./
 
 
-ENV VITE_API_URL=http://127.0.0.1:8330  
-ENV VITE_WEB_SOCKET_URL=ws://127.0.0.1:8331
+# Set default values if not provided
+ARG VITE_API_URL=http://127.0.0.1:8330
+ARG VITE_WEB_SOCKET_URL=ws://127.0.0.1:8331
+
+# Export as ENV so they are used in the build process
+ENV VITE_API_URL=${VITE_API_URL}  
+ENV VITE_WEB_SOCKET_URL=${VITE_WEB_SOCKET_URL}
 
 RUN npm run build
 

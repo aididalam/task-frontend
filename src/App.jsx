@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./Components/Universal/Navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { API_URL } from "./utils/constant";
 
 // Import the AuthProvider
 
@@ -16,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 const queryClient = new QueryClient();
 
 const App = () => {
+  console.log("API", API_URL);
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

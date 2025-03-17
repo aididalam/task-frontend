@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useEffect, useRef } from "react";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import useTaskStore from "../store/useTaskStore";
+import { API_URL, WEB_SOCKET_URL } from "../utils/constant";
 
 const useTasksLoader = (search = "", startDate = "", endDate = "", selectedStatuses = []) => {
   const { authState } = useAuth();
@@ -13,7 +14,7 @@ const useTasksLoader = (search = "", startDate = "", endDate = "", selectedStatu
   useEffect(() => {
     // Only create WebSocket connection if it doesn't exist
     if (!wsRef.current) {
-      const wsUrl = `${import.meta.env.VITE_WEB_SOCKET_URL}`; // Change this to your WebSocket URL
+      const wsUrl = WEB_SOCKET_URL; // Change this to your WebSocket URL
 
       // WebSocket options
       const wsOptions = {
@@ -93,14 +94,11 @@ const useTasksLoader = (search = "", startDate = "", endDate = "", selectedStatu
         queryParams += `${queryParams ? "&" : ""}statuses=${filteredStatuses.join(",")}`;
       }
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/tasks${queryParams ? "?" + queryParams : ""}`,
-        {
-          headers: {
-            Authorization: authState?.access_token ? `Bearer ${authState.access_token}` : ""
-          }
+      const response = await axios.get(`${API_URL}/tasks${queryParams ? "?" + queryParams : ""}`, {
+        headers: {
+          Authorization: authState?.access_token ? `Bearer ${authState.access_token}` : ""
         }
-      );
+      });
       return response.data;
     }
   });

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_URL } from "../utils/constant";
 
 const useApi = () => {
   const [data, setData] = useState(null);
@@ -12,7 +13,6 @@ const useApi = () => {
     setData(null);
     setCode(null);
 
-    const API_URL = import.meta.env.VITE_API_URL; // Get API base URL
     const url = `${API_URL}${endpoint}`;
 
     try {

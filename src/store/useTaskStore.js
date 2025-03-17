@@ -5,9 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { getPendingActions, removeSyncedActions, saveTaskAction } from "./dexieStore";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-
-// Declare the API URL constant
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_URL } from "../utils/constant";
 
 const useTaskStore = create(
   persist(
