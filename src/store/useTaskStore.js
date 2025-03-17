@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { getPendingActions, removeSyncedActions, saveTaskAction } from "./dexieStore";
 import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
 // Declare the API URL constant
 const API_URL = import.meta.env.VITE_API_URL;
@@ -16,7 +17,7 @@ const useTaskStore = create(
 
       addTask: async (newTask, access_token) => {
         const taskWithId = {
-          id: crypto.randomUUID(), // Generate a unique temporary ID
+          id: uuidv4(), // Generate a unique temporary ID
           ...newTask
         };
 

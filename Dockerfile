@@ -9,6 +9,11 @@ RUN npm install --legacy-peer-deps
 
 # Copy the source code and build the app
 COPY . .
+
+
+ENV VITE_API_URL=http://127.0.0.1:8330  
+ENV VITE_WEB_SOCKET_URL=ws://127.0.0.1:8331
+
 RUN npm run build
 
 # Step 2: Serve with Nginx
